@@ -8,25 +8,31 @@ import play.api.test.Helpers._
 @RunWith(classOf[JUnitRunner])
 class PersonApiSpec extends Specification {
   "PersonApi#register" should {
-//    "send 404 on a bad request" in new WithApplication{
-//      route(FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
-//    }
-//
-//    "render the index page" in new WithApplication{
-//      val home = route(FakeRequest(GET, "/")).get
-//
-//      status(home) must equalTo(OK)
-//      contentType(home) must beSome.which(_ == "text/html")
-//      contentAsString(home) must contain ("Your new application is ready.")
-//    }
     "response json validation error" in new WithApplication {
       val Some(result) = route(FakeRequest(POST, "/api/person",
         FakeHeaders(Seq(CONTENT_TYPE -> "application/json")),
         Json.parse( """{"typo1!!!":24, "name":{"first":"FirstName", "typo2!!!":"LastName"}}""")))
       status(result) mustEqual BAD_REQUEST
-      contentAsString(result) mustNotEqual
-        """ {"person.age":[{"msg":"error.path.missing"}],"person.name.last":[{"msg":"error.path.missing"}]}"""
+      contentAsString(result) mustEqual
+        """{"obj.age":[{"msg":"error.path.missing","args":[]}],"obj.name.last":[{"msg":"error.path.missing","args":[]}]}"""
     }
+
+    "response json validation ok" in new WithApplication {
+      val Some(result) = route(FakeRequest(POST, "/api/person",
+        FakeHeaders(Seq(CONTENT_TYPE -> "application/json")),
+        Json.parse( """{"age":24, "name":{"first":"FirstName", "last":"LastName"}}""")))
+      status(result) mustEqual OK
+//      contentAsString(result) mustEqual
+//        """{"age":24, "name":{"first":"FirstName","last":"LastName"}}"""    }
+    }
+
+    "response json validation with MiddleName ok" in new WithApplication {
+      val Some(result) = route(FakeRequest(POST, "/api/person",
+        FakeHeaders(Seq(CONTENT_TYPE -> "application/json")),
+        Json.parse( """{"age":24, "name":{"first":"FirstName", "middle":"MiddleName", "last":"LastName"}}""")))
+      status(result) mustEqual OK
+      contentAsString(result) mustEqual
+        """{"age":24,"name":{"first":"FirstName","middle":"MiddleName","last":"LastName"}}"""    }
   }
 
 }
