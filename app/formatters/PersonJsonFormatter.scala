@@ -8,6 +8,7 @@ import play.api.libs.json.Format
 object Formatter {
   implicit val NameJsonFormatter: Format[Name] = (
     (__ \ "first").format[String] and
+      (__ \ "middle").formatNullable[String] and
       (__ \ "last").format[String]
     )(Name.apply _, unlift(Name.unapply))
 
