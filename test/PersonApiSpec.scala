@@ -22,14 +22,17 @@ class PersonApiSpec extends Specification {
         FakeHeaders(Seq(CONTENT_TYPE -> "application/json")),
         Json.parse( """{"age":24, "name":{"first":"FirstName", "last":"LastName"}}""")))
       status(result) mustEqual OK
+      contentAsString(result) mustEqual
+        """{"age":24,"name":{"first":"FirstName","last":"LastName"}}"""
     }
 
-    "response json validation ok" in new WithApplication {
+    "response json validation with MiddleName ok" in new WithApplication {
       val Some(result) = route(FakeRequest(POST, "/api/person",
         FakeHeaders(Seq(CONTENT_TYPE -> "application/json")),
-        Json.parse( """{"age":24, "name":{"first":"FirstName", "last":"LastName"}}""")))
+        Json.parse( """{"age":24, "name":{"first":"FirstName", "middle":"MiddleName", "last":"LastName"}}""")))
       status(result) mustEqual OK
-    }
+      contentAsString(result) mustEqual
+        """{"age":24,"name":{"first":"FirstName","middle":"MiddleName","last":"LastName"}}"""    }
   }
 
 }
