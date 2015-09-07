@@ -22,8 +22,8 @@ class PersonApiSpec extends Specification {
         FakeHeaders(Seq(CONTENT_TYPE -> "application/json")),
         Json.parse( """{"age":24, "name":{"first":"FirstName", "last":"LastName"}}""")))
       status(result) mustEqual OK
-//      contentAsString(result) mustEqual
-//        """{"age":24, "name":{"first":"FirstName","last":"LastName"}}"""    }
+      contentAsString(result) mustEqual
+        """{"age":24,"name":{"first":"FirstName","last":"LastName"}}"""
     }
 
     "response json validation with MiddleName ok" in new WithApplication {
